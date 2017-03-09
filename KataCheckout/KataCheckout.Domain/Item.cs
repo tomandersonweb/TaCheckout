@@ -8,5 +8,7 @@ namespace KataCheckout.Domain
 {
     public class Item
     {
+        public string SKU { get; set; }
+        public int UnitPrice { get; set; }
     }
 }
