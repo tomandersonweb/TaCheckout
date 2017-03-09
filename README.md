@@ -1,2 +1,0 @@
-# TaCheckout
-Kata Checkout
