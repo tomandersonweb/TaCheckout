@@ -8,8 +8,6 @@ namespace KataCheckout.Domain
 {
     public class QuantitySpecialPrice : ISpecialPrice
     {
-        protected QuantitySpecialPrice() { }
-
         public QuantitySpecialPrice(Item item, int discountedQuantity, int discountedPrice)
         {
             Item = item;

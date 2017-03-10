@@ -8,7 +8,6 @@ namespace KataCheckout.Domain
 {
     public class Stock
     {
-        protected Stock() { }
         public Stock(List<Item> stock, List<ISpecialPrice> specialPrices)
         {
             StockList = stock;

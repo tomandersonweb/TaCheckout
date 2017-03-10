@@ -13,8 +13,6 @@ namespace KataCheckout.Domain
         private readonly List<ISpecialPrice> _specialPrices;
         private int _totalPrice;
 
-        protected Checkout() { }
-
         public Checkout(Stock stock)
         {
             _stock = stock.StockList;
@@ -24,7 +22,19 @@ namespace KataCheckout.Domain
 
         public int GetTotalPrice()
         {
-            return 115;
+            var groupedItems = _cart.GroupBy(x => x).Select(item => new { item.Key, qty = item.Count() });
+
+            foreach (var item in groupedItems)
+            {
+                var dsc = _specialPrices.Where(x => x.Item.SKU == item.Key.SKU).SingleOrDefault();
+
+                if (dsc != null)
+                    _totalPrice += dsc.CalculateDiscountedPrice(item.Key, item.qty);
+                else
+                    _totalPrice += item.Key.UnitPrice * item.qty;
+            }
+
+            return _totalPrice;
         }
 
         public void Scan(string item)
@@ -35,7 +45,7 @@ namespace KataCheckout.Domain
             var stockItem = _stock.Where(x => x.SKU == item).SingleOrDefault();
 
             if (stockItem == null)
-                throw new ArgumentOutOfRangeException("Item scanned is not in stock");
+                throw new ArgumentOutOfRangeException("Item scanned is not in the stock list");
 
             _cart.Add(stockItem);
         }

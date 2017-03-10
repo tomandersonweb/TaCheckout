@@ -31,9 +31,8 @@ namespace KataCheckout.Tests
         }
 
         [TestMethod]
-        public void OneOfEachItemScanned()
+        public void OneOfEachItemScanned_ShouldBe115()
         {
-            // Add all items to the cart
             var basket = new Checkout(_stock);
             basket.Scan("A");
             basket.Scan("B");
@@ -41,20 +40,84 @@ namespace KataCheckout.Tests
             basket.Scan("D");
             var totalPrice = basket.GetTotalPrice();
 
-            totalPrice.ShouldBeOneOf(115);
+            totalPrice.ShouldBe(115);
         }
 
         [TestMethod]
-        public void ThreeAItemScanned()
+        public void ThreeAItemScanned_ShouldBe130()
         {
-            // Add three A items to the checkout
             var basket = new Checkout(_stock);
             basket.Scan("A");
             basket.Scan("A");
             basket.Scan("A");
             var totalPrice = basket.GetTotalPrice();
 
-            totalPrice.ShouldBeOneOf(130);
+            totalPrice.ShouldBe(130);
+        }
+
+        [TestMethod]
+        public void TwoBItemScanned_ShouldBe45()
+        {
+            var basket = new Checkout(_stock);
+            basket.Scan("B");
+            basket.Scan("B");
+            var totalPrice = basket.GetTotalPrice();
+
+            totalPrice.ShouldBe(45);
+        }
+
+        [TestMethod]
+        public void ThreeATwoBOneCItemScanned_ShouldBe45()
+        {
+            var basket = new Checkout(_stock);
+            basket.Scan("A");
+            basket.Scan("A");
+            basket.Scan("A");
+            basket.Scan("B");
+            basket.Scan("B");
+            basket.Scan("C");
+            var totalPrice = basket.GetTotalPrice();
+
+            totalPrice.ShouldBe(195);
+        }
+
+        [TestMethod]
+        public void CalculateSpecialPriceThreeAItems_ShouldBe130()
+        {
+            var item = _stock.StockList.Where(x => x.SKU == "A").SingleOrDefault();
+            var specialPrice = new QuantitySpecialPrice(item, discountedPrice : 130, discountedQuantity : 3) { };
+
+            var totalPrice = specialPrice.CalculateDiscountedPrice(item, 3);
+
+            totalPrice.ShouldBe(130);
+        }
+
+        [TestMethod]
+        public void CalculateSpecialPriceThreeBItems_ShouldBe45()
+        {
+            var item = _stock.StockList.Where(x => x.SKU == "B").SingleOrDefault();
+            var specialPrice = new QuantitySpecialPrice(item, discountedPrice: 45, discountedQuantity: 2) { };
+
+            var totalPrice = specialPrice.CalculateDiscountedPrice(item, 2);
+
+            totalPrice.ShouldBe(45);
+        }
+
+        [TestMethod]
+        public void ScanEmtpyItem_ShouldThrow()
+        {
+            var basket = new Checkout(_stock);
+            
+            Should.Throw<ArgumentNullException>(() => basket.Scan(""));
+        }
+
+        [TestMethod]
+        public void ScanItemNotInList_ShouldThrow()
+        {
+            var basket = new Checkout(_stock);
+
+            Should.Throw<ArgumentOutOfRangeException>(() => basket.Scan("Z"));
+
         }
     }
 }
